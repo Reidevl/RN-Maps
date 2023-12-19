@@ -31,8 +31,15 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Permitir la localizacion siempre que la app este activa</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+		<key>YOUR-PURPOSE-KEY</key>
+		<string>Permitir la localización temporalmente</string>
+	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Permitir la localización cuando se use la app</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>
