@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import MapView, {Marker, PROVIDER_DEFAULT} from 'react-native-maps';
+import MapView, {Marker, PROVIDER_DEFAULT, Polyline} from 'react-native-maps';
 import {useLocation} from '../hooks/useLocation';
 import {LoadingScreen} from '../pages/LoadingScreen';
 import {Fab} from './Fab';
@@ -13,6 +13,7 @@ export const Map = ({markers}: Props) => {
     hasLocation,
     initialPosition,
     userLocation,
+    routeLines,
     getCurrentLocation,
     followUserLocation,
     stopFollowUserLocation
@@ -69,7 +70,13 @@ export const Map = ({markers}: Props) => {
           longitudeDelta: 0.0421,
         }}
         onTouchStart={() => following.current = false }
-        ></MapView>
+        >
+            <Polyline
+                coordinates={ routeLines }
+                strokeColor='blue'
+                strokeWidth={3}
+            />
+        </MapView>
 
       <Fab
         iconName="locate-outline"
