@@ -1,14 +1,26 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import MapView, {Marker, PROVIDER_DEFAULT} from 'react-native-maps';
 import {useLocation} from '../hooks/useLocation';
 import {LoadingScreen} from '../pages/LoadingScreen';
+import { Fab } from './Fab';
 
 interface Props {
   markers?: typeof Marker;
 }
 
 export const Map = ({markers}: Props) => {
-  const {hasLocation, initialPosition} = useLocation();
+  const {hasLocation, initialPosition, getCurrentLocation} = useLocation();
+
+  const mapViewRef = useRef<MapView>();
+
+  const centerPosition = async() => {
+    const location = await getCurrentLocation();
+
+    mapViewRef.current?.animateCamera({
+        center: location,
+        zoom: 18,
+    })
+  }
 
   if (!hasLocation) {
     return <LoadingScreen />;
@@ -17,16 +29,29 @@ export const Map = ({markers}: Props) => {
   return (
     <>
       <MapView
+      ref={ (el) => mapViewRef.current = el! }
         style={{flex: 1}}
         // Set Maps' provider Apple or Google
         provider={PROVIDER_DEFAULT}
         showsUserLocation
+        showsMyLocationButton={ false }
         initialRegion={{
           latitude: initialPosition.latitude,
           longitude: initialPosition.longitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}></MapView>
+
+        <Fab
+            iconName='locate-outline'
+            onPress={ centerPosition }
+            style={{
+                position: 'absolute',
+                bottom: 20,
+                right: 20
+            }}
+        />
+
     </>
   );
 };
