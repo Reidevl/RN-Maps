@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import MapView, {Marker, PROVIDER_DEFAULT, Polyline} from 'react-native-maps';
 import {useLocation} from '../hooks/useLocation';
 import {LoadingScreen} from '../pages/LoadingScreen';
@@ -9,6 +9,8 @@ interface Props {
 }
 
 export const Map = ({markers}: Props) => {
+  const [showPolyline, setShowPolyline] = useState(true);
+
   const {
     hasLocation,
     initialPosition,
@@ -16,7 +18,7 @@ export const Map = ({markers}: Props) => {
     routeLines,
     getCurrentLocation,
     followUserLocation,
-    stopFollowUserLocation
+    stopFollowUserLocation,
   } = useLocation();
 
   const mapViewRef = useRef<MapView>();
@@ -36,7 +38,7 @@ export const Map = ({markers}: Props) => {
   useEffect(() => {
     followUserLocation();
     return () => {
-        stopFollowUserLocation()
+      stopFollowUserLocation();
     };
   }, []);
 
@@ -44,11 +46,10 @@ export const Map = ({markers}: Props) => {
     if (!following.current) return;
 
     mapViewRef.current?.animateCamera({
-        center: userLocation,
-        zoom: 18,
-      });
-  }, [ userLocation ])
-  
+      center: userLocation,
+      zoom: 18,
+    });
+  }, [userLocation]);
 
   if (!hasLocation) {
     return <LoadingScreen />;
@@ -69,14 +70,15 @@ export const Map = ({markers}: Props) => {
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
-        onTouchStart={() => following.current = false }
-        >
-            <Polyline
-                coordinates={ routeLines }
-                strokeColor='blue'
-                strokeWidth={3}
-            />
-        </MapView>
+        onTouchStart={() => (following.current = false)}>
+        {showPolyline && (
+          <Polyline
+            coordinates={routeLines}
+            strokeColor="blue"
+            strokeWidth={3}
+          />
+        )}
+      </MapView>
 
       <Fab
         iconName="locate-outline"
@@ -84,6 +86,15 @@ export const Map = ({markers}: Props) => {
         style={{
           position: 'absolute',
           bottom: 20,
+          right: 20,
+        }}
+      />
+      <Fab
+        iconName="brush-outline"
+        onPress={() => setShowPolyline(!showPolyline)}
+        style={{
+          position: 'absolute',
+          bottom: 80,
           right: 20,
         }}
       />

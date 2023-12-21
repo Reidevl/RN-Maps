@@ -15,9 +15,21 @@ export const useLocation = () => {
   });
 
   const watchId = useRef<number>();
+  const isMoutend = useRef(true);
+
+  useEffect(() => {
+    isMoutend.current = true;
+  
+    return () => {
+      isMoutend.current = false;
+    }
+  }, [])
+  
 
   useEffect(() => {
     getCurrentLocation().then((location: ILocation) => {
+      if (!isMoutend.current) return;
+
       setInitialPosition(location);
       setUserLocation(location);
       setRouteLines(routes => [...routes, location]);
@@ -45,10 +57,13 @@ export const useLocation = () => {
   const followUserLocation = () => {
     watchId.current = Geolocation.watchPosition(
       ({coords}) => {
+        if (!isMoutend.current) return;
+
         const location: ILocation = {
           latitude: coords.latitude,
           longitude: coords.longitude
         }
+
         setUserLocation(location);
         setRouteLines(routes => [...routes, location]);
       },
